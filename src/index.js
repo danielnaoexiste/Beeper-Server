@@ -17,10 +17,6 @@ app.use(postRoutes);
 
 const mongoUri = process.env.MONGO_URI
 
-console.log(mongoUri)
-console.log(process.env.MONGO_URI)
-console.log(process.env)
-
 mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useCreateIndex: true,
