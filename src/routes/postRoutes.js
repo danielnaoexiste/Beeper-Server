@@ -54,13 +54,11 @@ router.get('/starred', async (req, res) => {
 })
 
 router.put('/starred/:id', async (req, res) => {
-    const id = req.params.id;
+    const { starred } = req.body;
     Post.update({ _id: req.params.id }, { starred }, function(e, post) {
         if (e) return res.status(422).send({ error: e.message })
-
         res.send({ message: "Post starred succesfully"})
     })
-    res.send(post)
 })
 
 
