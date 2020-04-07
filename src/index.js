@@ -9,6 +9,7 @@ const postRoutes = require('./routes/postRoutes');
 const requireAuth = require('./middlewares/requireAuth')
 
 const app = express();
+const port = process.env.PORT || 3000
 
 app.use(bodyParser.json())
 app.use(authRoutes);
@@ -34,6 +35,6 @@ app.get('/', requireAuth, (req, res) => {
     res.send(`Your email: ${req.user.email}`);
 });
 
-app.listen(8080, () => {
-    console.log('Listening on port 8080');
+app.listen(port, () => {
+    console.log('Listening on port', port);
 });
