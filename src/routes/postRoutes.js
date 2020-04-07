@@ -53,16 +53,12 @@ router.get('/starred', async (req, res) => {
     res.send(post)
 })
 
-router.post('/starred/:id', async (req, res) => {
+router.put('/starred/:id', async (req, res) => {
     const id = req.params.id;
-    const post = await Post.findById(id, async (e, post) => {
-        console.log('finding post')
+    Post.update({ _id: req.params.id }, { starred }, function(e, post) {
         if (e) return res.status(422).send({ error: e.message })
-    })
-    console.log("Post: ", post)
-    post.update({ starred: true }, async (e, post) => {
-        console.log('updated!')
-        if (e) return res.status(422).send({ error: e.message })
+
+        res.send({ message: "Post starred succesfully"})
     })
     res.send(post)
 })
