@@ -32,8 +32,8 @@ postSchema.pre('save', function (next) {
         // Cipher
         const key = process.env.CRYPTO_KEY;
         let cipher = crypto.createCipheriv('des-ede3', key, "");
-        let encrypted = cipher.update(post.content, 'utf-8', 'base64');
-        encrypted += cipher.final('base64');
+        let encrypted = cipher.update(post.content, 'utf-8', 'hex');
+        encrypted += cipher.final('hex');
         post.content = encrypted;
         console.log(post.content)
         next()
@@ -49,9 +49,9 @@ postSchema.methods.decrypt = function () {
     const key = process.env.CRYPTO_KEY;
     let decipher = crypto.createDecipheriv('des-ede3', key, "")
     decipher.setAutoPadding(false);
-    let decrypted = decipher.update(encrypted, 'base64', 'utf-8')
+    let decrypted = decipher.update(encrypted, 'hex', 'utf-8')
     decrypted += decipher.final('utf-8')
-    post.content = decrypted;
+    post.content = decrypted.toString();
 }
 
 postSchema.statics = {
