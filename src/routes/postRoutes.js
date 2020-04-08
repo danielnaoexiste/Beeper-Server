@@ -12,7 +12,9 @@ router.use(requireAuth);
 
 router.get('/posts', async (req, res) => {
     const post = await Post.find({ userId: req.user._id });
-
+    for (let i = 0; i < post.length; i++) {
+        post[i].decrypt()
+    }
     res.send(post);
 });
 
@@ -49,7 +51,9 @@ router.put('/update/:id', function (req, res) {
 
 router.get('/starred', async (req, res) => {
     const post = await Post.find({ userId: req.user._id, starred: true })
-    console.log(post)
+    for (let i = 0; i < post.length; i++) {
+        post[i].decrypt()
+    }
     res.send(post)
 })
 
