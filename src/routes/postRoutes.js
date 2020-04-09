@@ -1,12 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const requireAuth = require('../middlewares/requireAuth');
+const crypto = require('crypto')
 
 const Post = mongoose.model('Post');
 
 const router = express.Router();
 
-mongoose.set('useFindAndModify', true);
+const encrypt = function (content) {
+    console.log('con', content)
+    try {
+        const key = process.env.CRYPTO_KEY;
+        let cipher = crypto.createCipheriv('des-ede3', key, "");
+        let encrypted = cipher.update(content, 'utf-8', 'base64');
+        encrypted += cipher.final('base64');
+        return encrypted;
+    } catch (e) {
+        /* silence */
+    }
+}
 
 router.use(requireAuth);
 
@@ -39,14 +51,23 @@ router.delete('/remove/:id', function (req, res) {
     })
 })
 
-router.put('/update/:id', function (req, res) {
-    const { title, content, lastEdited } = req.body
-    Post.update({ _id: req.params.id }, { title, content, lastEdited }, function (e, post) {
-        if (e) return res.status(422).send({ error: e.message })
 
+router.put('/update/:id', async (req, res) => {
+    const { title, lastEdited } = req.body;
+    let { content } = req.body;
 
-        res.send({ message: "Post updated successfully" })
-    })
+    if (!title || !content) return res.status(422).send({ error: 'Must provide title and content!' })
+
+    try {
+        content = await encrypt(content)
+        const post = Post.findOneAndUpdate({ _id: req.params.id }, {title, content, lastEdited }, async (e, post) => {
+            if (e) return res.status(422).send({ error: e.message });
+            res.send(post);
+        })
+
+    } catch (e) {
+        return res.status(422).send({ error: e.message })
+    }
 })
 
 router.get('/starred', async (req, res) => {
