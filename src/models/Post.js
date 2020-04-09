@@ -48,7 +48,6 @@ postSchema.methods.decrypt = function () {
     const encrypted = post.content;
     const key = process.env.CRYPTO_KEY;
     let decipher = crypto.createDecipheriv('des-ede3', key, "")
-    decipher.setAutoPadding(false);
     let decrypted = decipher.update(encrypted, 'hex', 'utf-8')
     decrypted += decipher.final('utf-8')
     post.content = decrypted.toString();
