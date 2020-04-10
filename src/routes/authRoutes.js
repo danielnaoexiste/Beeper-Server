@@ -18,7 +18,10 @@ router.post('/signup', async (req, res) => {
 		const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY)
 		res.send({ token })
 	} catch (e) {
-		res.status(422).send({ error: e.message });
+		if (e.name === 'MongoError' && e.code === 11000) {
+			return res.status(500).send({ error: 'Email already signed up!' });
+		  }
+		res.status(422).send({ error: "Something went wrong" });
 	}
 });
 
