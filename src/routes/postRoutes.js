@@ -30,6 +30,17 @@ router.get('/posts', async (req, res) => {
     res.send(post);
 });
 
+router.get('/search', async (req, res) => {
+    const title = req.query.title;
+    let condition = title ? { userId: req.user._id, title: { $regex: new RegExp(title), $options: "i" } } : {};
+    const post = await Post.find(condition);
+    for (let i = 0; i < post.length; i++) {
+        post[i].decrypt()
+    }
+    res.send(post);
+});
+
+
 router.post('/posts', async (req, res) => {
     const { title, content } = req.body;
     if (!title || !content) return res.status(422).send({ error: 'Must provide title and content!' })
